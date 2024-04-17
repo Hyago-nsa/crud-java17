@@ -38,7 +38,7 @@ public class DemoController {
     public ResponseEntity<Object> getProductById(@PathVariable(value = "id") UUID id){
         Optional<DemoModel> productO = demoReporitory.findById(id);
         if(productO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
         }
         return ResponseEntity.ok(productO.get());
     }
@@ -52,6 +52,16 @@ public class DemoController {
         var demoModel = productO.get();
         BeanUtils.copyProperties(demoRecordDto, demoModel);
         return ResponseEntity.ok(demoReporitory.save(demoModel));
+    }
+
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") UUID id){
+        Optional<DemoModel> productO = demoReporitory.findById(id);
+        if(productO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+        demoReporitory.delete(productO.get());
+        return ResponseEntity.ok().body("Deleted product successfully");
     }
 
 
