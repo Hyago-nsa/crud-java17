@@ -38,8 +38,21 @@ public class DemoController {
     public ResponseEntity<Object> getProductById(@PathVariable(value = "id") UUID id){
         Optional<DemoModel> productO = demoReporitory.findById(id);
         if(productO.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok(productO.get());
     }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id, @RequestBody @Valid DemoRecordDto demoRecordDto){
+        Optional<DemoModel> productO = demoReporitory.findById(id);
+        if(productO.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        var demoModel = productO.get();
+        BeanUtils.copyProperties(demoRecordDto, demoModel);
+        return ResponseEntity.ok(demoReporitory.save(demoModel));
+    }
+
+
 }
